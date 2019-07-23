@@ -30,10 +30,10 @@ Shader "Hidden/HdrpBlitter/CrossFade"
     ) : SV_Target
     {
         uint2 ssp = texcoord * _ScreenSize.xy;
-        float4 c1 = LOAD_TEXTURE2D(_Source1Texture, ssp);
-        float4 c2 = LOAD_TEXTURE2D(_Source2Texture, ssp);
-        float4 c3 = lerp(c1, c2, _FadeParameter);
-        return lerp(c3, _FillColor, _FillColor.a);
+        float4 c1 = LinearToSRGB(LOAD_TEXTURE2D(_Source1Texture, ssp));
+        float4 c2 = LinearToSRGB(LOAD_TEXTURE2D(_Source2Texture, ssp));
+        float4 c3 = LinearToSRGB(_FillColor);
+        return SRGBToLinear(lerp(lerp(c1, c2, _FadeParameter), c3, c3.a));
     }
 
     ENDHLSL
