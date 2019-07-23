@@ -2,12 +2,23 @@ using UnityEngine;
 using UnityEngine.Rendering;
 using UnityEngine.Experimental.Rendering.HDPipeline;
 
-namespace Cb4
+namespace HdrpBlitter
 {
     [ExecuteAlways]
     public sealed class SimpleBlit : MonoBehaviour
     {
-        [SerializeField] RenderTexture _source = null;
+        #region Public properties
+
+        [SerializeField] Texture _source = null;
+
+        public Texture source {
+            get { return _source; }
+            set { _source = value; }
+        }
+
+        #endregion
+
+        #region MonoBehaviour implementation
 
         string _label;
 
@@ -25,23 +36,25 @@ namespace Cb4
             if (data != null) data.customRender -= CustomRender;
         }
 
+        #endregion
+
+        #region Custom render callback
+
         void CustomRender(ScriptableRenderContext context, HDCamera camera)
         {
+            // Target ID
+            var rt = camera.camera.targetTexture;
+            var rtid = rt != null ?
+                new RenderTargetIdentifier(rt) : 
+                new RenderTargetIdentifier(BuiltinRenderTextureType.CameraTarget);
+
+            // Blit command
             var cmd = CommandBufferPool.Get(_label);
-
-            cmd.SetViewport(new Rect(0, 0, Screen.width, Screen.height));
-            CoreUtils.ClearRenderTarget(cmd, ClearFlag.All, Color.clear);
-
-            HDUtils.BlitQuad(
-                cmd, _source,
-                new Vector4(1, 1, 0, 0),
-                new Vector4(1, -1, 0, 1),
-                0, true
-            );
-
+            cmd.Blit(_source, rtid);
             context.ExecuteCommandBuffer(cmd);
-
             CommandBufferPool.Release(cmd);
         }
+
+        #endregion
     }
 }
