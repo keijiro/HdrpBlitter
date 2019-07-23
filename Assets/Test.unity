@@ -469,7 +469,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _source1: {fileID: 8400000, guid: 35b0b82df5dd12c0fa22b99a60bf6823, type: 2}
   _source2: {fileID: 2800000, guid: 713199a179dd5e86087f74a69f979dee, type: 3}
-  _fadeParameter: 0
+  _fadeParameter: 0.5
   _shader: {fileID: 4800000, guid: 6de8c691d83867ce09d18d1578accb04, type: 3}
 --- !u!4 &999987323
 Transform:
