@@ -2,10 +2,7 @@ Shader "Hidden/HdrpBlitter/CrossFade"
 {
     HLSLINCLUDE
 
-    #include "Packages/com.unity.render-pipelines.core/ShaderLibrary/Common.hlsl"
-    #include "Packages/com.unity.render-pipelines.core/ShaderLibrary/Color.hlsl"
-    #include "Packages/com.unity.render-pipelines.high-definition/Runtime/ShaderLibrary/ShaderVariables.hlsl"
-    #include "Packages/com.unity.render-pipelines.high-definition/Runtime/Material/NormalBuffer.hlsl"
+    #include "Common.hlsl"
 
     TEXTURE2D(_Source1Texture);
     TEXTURE2D(_Source2Texture);
@@ -20,7 +17,7 @@ Shader "Hidden/HdrpBlitter/CrossFade"
     )
     {
         positionCS = GetFullScreenTriangleVertexPosition(vertexID);
-        texcoord = GetFullScreenTriangleTexCoord(vertexID);
+        texcoord = FixVFlip(GetFullScreenTriangleTexCoord(vertexID));
     }
 
     // Fragment shader

@@ -2,10 +2,7 @@ Shader "Hidden/HdrpBlitter/Glitch"
 {
     HLSLINCLUDE
 
-    #include "Packages/com.unity.render-pipelines.core/ShaderLibrary/Common.hlsl"
-    #include "Packages/com.unity.render-pipelines.core/ShaderLibrary/Color.hlsl"
-    #include "Packages/com.unity.render-pipelines.high-definition/Runtime/ShaderLibrary/ShaderVariables.hlsl"
-    #include "Packages/com.unity.render-pipelines.high-definition/Runtime/Material/NormalBuffer.hlsl"
+    #include "Common.hlsl"
     #include "SimplexNoise2D.hlsl"
 
     TEXTURE2D(_Source1Texture);
@@ -21,7 +18,7 @@ Shader "Hidden/HdrpBlitter/Glitch"
     )
     {
         positionCS = GetFullScreenTriangleVertexPosition(vertexID);
-        texcoord = GetFullScreenTriangleTexCoord(vertexID);
+        texcoord = FixVFlip(GetFullScreenTriangleTexCoord(vertexID));
     }
 
     // Fragment shader
@@ -42,7 +39,7 @@ Shader "Hidden/HdrpBlitter/Glitch"
         float n1 = 0.5 * (1 + snoise(float2(segment, _EffectTime * 3)));
         float n2 = 0.5 * (1 + snoise(float2(segment, _EffectTime + 100)));
 
-        half mask = n1 < _FadeParameter;
+        float mask = n1 < _FadeParameter;
         id += mask * floor(n2 * 16) / 8 * ireso.x;
 
         float2 uv1 = float2(id % ireso.x, id / ireso.x) / reso;
@@ -57,7 +54,7 @@ Shader "Hidden/HdrpBlitter/Glitch"
         float4 c1 = LOAD_TEXTURE2D(_Source1Texture, p1);
         float4 c2 = LOAD_TEXTURE2D(_Source2Texture, p2);
 
-        return frac(c1 + c2 * mask);
+        return lerp(c1, frac(c1 + c2 * mask), mask);
     }
 
     ENDHLSL
